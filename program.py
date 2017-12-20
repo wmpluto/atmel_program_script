@@ -37,7 +37,7 @@ class AtProgram:
     def flash(self, file):
         # atprogram -t avrispmk2 -i ISP -d atmega128rfr2 -xr -cl 2mhz program -c --verify -f foo61.hex
         print("programing flash...")
-        arguments = " program " + " --verify " + " --format hex " + " -f " + file
+        arguments = " program " + " -c " + " --verify " + " --format hex " + " -f " + file
         self.actuator(arguments)
 
     def eeprom(self, file):
