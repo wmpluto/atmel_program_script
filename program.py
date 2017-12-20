@@ -7,6 +7,8 @@ class AtProgram:
     tool = 'atmelice'
     fuses_expected = 'D7'
     fuses_SPI_bit = 6 - 1
+    eeprom_start = '0000'
+    flash_start = '8000'
 
     def __init__(self, device, interface, atprogram):
         self.device = device
@@ -19,18 +21,30 @@ class AtProgram:
         print("File Size: %.1fK" % (int(os.path.getsize(file))/1024))
         print("Date Motified: ", time.asctime(time.localtime(os.path.getmtime(file))))
 
-        if True:
-            self.flash(file)
-        else:
-            self.eeprom(file)
+        with open(file, mode='rb') as f:
+            line = f.readline()
+            try:
+                address = line[3:7]
+                if address == self.flash_start.encode('ansi'):
+                    self.flash(file)
+                elif address == self.eeprom_start.encode('ansi'):
+                    self.eeprom(file)
+                else:
+                    print("start address not detected")
+            except Exception as e:
+                print("start address not detected")
 
     def flash(self, file):
         # atprogram -t avrispmk2 -i ISP -d atmega128rfr2 -xr -cl 2mhz program -c --verify -f foo61.hex
-        pass
+        print("programing flash...")
+        arguments = " program " + " --verify " + " --format hex " + " -f " + file
+        self.actuator(arguments)
 
     def eeprom(self, file):
         # atprogram -t avrispmk2 -i ISP -d atmega128rfr2 program -ee --format hex -f fooEEPROM.eep
-        pass
+        print("programing eeprom...")
+        arguments = " program " + " -ee " + " --verify " + " --format hex " + " -f " + file
+        self.actuator(arguments)
 
     def erase(self):
         # atprogram -t atmelice -i ISP -d ATA5702M322 chiperase
@@ -92,8 +106,12 @@ def main():
     print("%s Program Tool using %s" % (device, interface))
 
     programer = AtProgram(device, interface, atprogram)
+    last_cmd = ''
     while True:
         cmd = input("\nEnter CMD: ")
+        if cmd == '':
+            cmd = last_cmd
+            print("Repeat last command:", cmd)
         if cmd == "erase":
             programer.erase()
         elif "fuses" in cmd:
@@ -107,7 +125,9 @@ def main():
         elif os.path.isfile(cmd) and os.path.exists(cmd):
             programer.program(cmd)
         else:
-            print("Unrecognized CMD\n")
+            print("Unrecognized CMD")
+
+        last_cmd = cmd
 
 if __name__ == "__main__":
     main()
