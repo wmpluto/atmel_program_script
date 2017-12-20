@@ -5,10 +5,10 @@ import os, time, subprocess
 class AtProgram:
     # os.system('notepad')
     tool = 'atmelice'
-    fuses_expected = 'D7'
+    fuses_expected = 'E299FF'
     fuses_SPI_bit = 6 - 1
     eeprom_start = '0000'
-    flash_start = '8000'
+    flash_start = '0000'
 
     def __init__(self, device, interface, atprogram):
         self.device = device
@@ -18,14 +18,15 @@ class AtProgram:
         self.preprocess()
 
     def program(self, file):
-        print("File Size: %.1fK" % (int(os.path.getsize(file))/1024))
+        size = int(os.path.getsize(file))/1024
+        print("File Size: %.1fK" % size)
         print("Date Motified: ", time.asctime(time.localtime(os.path.getmtime(file))))
 
         with open(file, mode='rb') as f:
             line = f.readline()
             try:
                 address = line[3:7]
-                if address == self.flash_start.encode('ansi'):
+                if address == self.flash_start.encode('ansi') and size > 4:
                     self.flash(file)
                 elif address == self.eeprom_start.encode('ansi'):
                     self.eeprom(file)
@@ -99,8 +100,8 @@ class AtProgram:
         pass
 
 def main():
-    device = "ATA5702M322"
-    interface = "ISP"
+    device = "ATmega2560"
+    interface = "JTAG"
     atprogram = r'"C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\atprogram.exe "'
 
     print("%s Program Tool using %s" % (device, interface))
