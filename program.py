@@ -6,7 +6,7 @@ class AtProgram:
     # os.system('notepad')
     tool = 'atmelice'
     fuses_expected = 'E299FF'
-    fuses_SPI_bit = 6 - 1
+    fuses_SPI_bit = 15 - 1
     eeprom_start = '0000'
     flash_start = '0000'
 
