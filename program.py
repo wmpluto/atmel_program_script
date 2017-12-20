@@ -99,7 +99,7 @@ class AtProgram:
         pass
 
 def main():
-    device = "ATA5702M322"
+    device = "ATA5782"
     interface = "ISP"
     atprogram = r'"C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\atprogram.exe "'
 
