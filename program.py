@@ -104,12 +104,14 @@ def main():
     interface = "JTAG"
     atprogram = r'"C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\atprogram.exe "'
 
-    print("%s Program Tool using %s" % (device, interface))
+    print("%s Tool using %s" % (device, interface))
 
     programer = AtProgram(device, interface, atprogram)
+    programer.fuses()
     last_cmd = ''
     while True:
-        cmd = input("\nEnter CMD: ")
+        print("\n%s Tool using %s" % (device, interface))
+        cmd = input("Enter CMD: ")
         if cmd == '':
             cmd = last_cmd
             print("Repeat last command:", cmd)
